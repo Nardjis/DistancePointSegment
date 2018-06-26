@@ -1,0 +1,33 @@
+function DistSeg(p,p1,p2:tpoint;out pp:tpoint):real;
+Var Angle1,Angle2:double;a1,a2,b1,b2:real;
+begin
+//see if the projection of our point P is outside the segment[P1,P2] and near P1
+Angle1:=(((P1.X-P.X)*(P1.X-P2.X))+((P1.Y-P.Y)*(P1.Y-P2.Y)))/(DistPoint(P1,P)*DistPoint(P1,P2)); //L'angle1 pas de round()
+if angle1>1 then angle1:=1;
+if angle1<-1 then angle1:=-1;
+Angle1:=radtodeg(arccos(Angle1));//showmessage('angle1 '+floattostr(angle1));
+if Angle1>90 then pp:=p1;
+//see if the projection of our point P is outside the segment[P1,P2] and near P2
+Angle2:=(((P2.X-P.X)*(P2.X-P1.X))+((P2.Y-P.Y)*(P2.Y-P1.Y)))/(DistPoint(P2,P)*DistPoint(P2,P1)); //L'angle 2
+if angle2>1 then angle2:=1;
+if angle2<-1 then angle2:=-1;
+Angle2:=radtodeg(arccos(Angle2));//showmessage('angle2 '+floattostr(angle2));
+if Angle2>90 then pp:=p2;
+//Else projection
+if (not(angle1>90))and(not(angle2>90)) then
+    begin
+    //p1<>p2
+    if p1.X=p2.X then begin pp.X:=p1.X; pp.Y:=p.Y  end;
+    if p1.Y=p2.Y then begin pp.X:=p.X;pp.Y:=p1.Y; end;
+    if (p1.X<>p2.X)and(p1.y<>p2.y) then
+        begin
+        a1:=(p1.y-p2.y)/(p1.x-p2.x);
+        b1:=p1.y-(a1*p1.X);
+        a2:=-1/a1;
+        b2:=p.y-(a2*p.x);
+        pp.X:=trunc((b2-b1)/(a1-a2));
+        pp.Y:=trunc(a1*pp.X+b1);
+        end;
+    end;
+DistSeg:=DistPoint(p,pp);//DistPoint is the classical sqrt(sqr(x1-x2)+sqr(y1-y2))
+end;
